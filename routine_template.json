@@ -1,0 +1,33 @@
+{
+    "_instructions": "This is a template for your weekly class routine. Copy this file to data/routine.json and edit with your actual schedule. Each day has a list of classes with time (24h format HH:MM), subject name, and room/location.",
+    "Sunday": [
+        {"time": "08:00", "subject": "Mathematics", "room": "Room 101"},
+        {"time": "10:00", "subject": "Physics", "room": "Room 203"},
+        {"time": "13:00", "subject": "English", "room": "Room 105"}
+    ],
+    "Monday": [
+        {"time": "08:00", "subject": "Computer Science", "room": "Lab 1"},
+        {"time": "10:00", "subject": "Chemistry", "room": "Room 302"},
+        {"time": "14:00", "subject": "Nepali", "room": "Room 108"}
+    ],
+    "Tuesday": [
+        {"time": "09:00", "subject": "Mathematics", "room": "Room 101"},
+        {"time": "11:00", "subject": "Physics Lab", "room": "Lab 2"},
+        {"time": "14:00", "subject": "Social Studies", "room": "Room 205"}
+    ],
+    "Wednesday": [
+        {"time": "08:00", "subject": "English", "room": "Room 105"},
+        {"time": "10:00", "subject": "Computer Science", "room": "Lab 1"},
+        {"time": "13:00", "subject": "Chemistry", "room": "Room 302"}
+    ],
+    "Thursday": [
+        {"time": "08:00", "subject": "Nepali", "room": "Room 108"},
+        {"time": "10:00", "subject": "Mathematics", "room": "Room 101"},
+        {"time": "14:00", "subject": "Physics", "room": "Room 203"}
+    ],
+    "Friday": [
+        {"time": "09:00", "subject": "Social Studies", "room": "Room 205"},
+        {"time": "11:00", "subject": "Computer Science Lab", "room": "Lab 1"},
+        {"time": "14:00", "subject": "Chemistry Lab", "room": "Lab 3"}
+    ]
+}
