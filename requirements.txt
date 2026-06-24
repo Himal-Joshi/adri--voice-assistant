@@ -1,0 +1,33 @@
+# ── Adri — Python Dependencies ────────────────────────────────────────────
+# Install:  pip install -r requirements.txt
+
+# Gemini API (official SDK)
+google-genai>=1.0.0
+
+# Speech-to-Text (faster-whisper — also requires ffmpeg on PATH)
+faster-whisper>=1.2.0
+
+# Text-to-Speech
+edge-tts>=7.0.0
+
+# Audio recording
+sounddevice>=0.4.6
+numpy>=1.24.0
+scipy>=1.10.0
+
+# Audio playback
+pygame>=2.5.0
+
+# Environment variables
+python-dotenv>=1.0.0
+
+# Web search
+tavily-python>=0.3.0
+
+# Google Classroom API
+google-api-python-client>=2.100.0
+google-auth-httplib2>=0.1.0
+google-auth-oauthlib>=1.1.0
+
+# Natural language date/time parsing
+dateparser>=1.1.0
