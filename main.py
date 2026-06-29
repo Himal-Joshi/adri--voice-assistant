@@ -16,7 +16,7 @@ from config import logger
 BANNER = r"""
     ╔═══════════════════════════════════════════════════╗
     ║                                                   ║
-    ║       आद्री  —  Adri Voice Assistant              ║
+    ║       आद्री  —  Aadri Voice Assistant              ║
     ║       ─────────────────────────────                ║
     ║       Your personal assistant for                  ║
     ║       English & Nepali                             ║
@@ -25,20 +25,20 @@ BANNER = r"""
 """
 
 GREETINGS_EN = [
-    "Hey! Adri here, ready when you are.",
-    "Hi there! Adri at your service.",
-    "Hello! Adri here — what can I help with?",
-    "Adri here! What's up?",
+    "Hey! Aadri here, ready when you are.",
+    "Hi there! Aadri at your service.",
+    "Hello! Aadri here — what can I help with?",
+    "Aadri here! What's up?",
 ]
 
 GREETINGS_NE = [
-    "नमस्ते! Adri तयार छ, भन्नुहोस्।",
-    "नमस्ते! Adri यहाँ छ — कसरी मद्दत गर्न सक्छु?",
+    "नमस्ते! Aadri तयार छ, भन्नुहोस्।",
+    "नमस्ते! Aadri यहाँ छ — कसरी मद्दत गर्न सक्छु?",
 ]
 
 GOODBYES_EN = [
     "See you later! Take care.",
-    "Bye! Adri signing off.",
+    "Bye! Aadri signing off.",
     "Catch you later!",
 ]
 
@@ -216,7 +216,7 @@ def main():
                 response_lang = "en"
 
             # Display and speak response
-            print(f"\n  🤖 Adri: {response_text}\n")
+            print(f"\n  🤖 Aadri: {response_text}\n")
             try:
                 speak(response_text, response_lang)
             except Exception as e:

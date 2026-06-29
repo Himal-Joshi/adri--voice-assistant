@@ -31,3 +31,7 @@ google-auth-oauthlib>=1.1.0
 
 # Natural language date/time parsing
 dateparser>=1.1.0
+
+# NVIDIA API Catalog integration
+openai>=1.0.0
+

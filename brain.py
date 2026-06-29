@@ -7,14 +7,15 @@ import json
 import time
 from typing import Any, Callable
 
-from config import logger, GEMINI_API_KEY, GEMINI_MODEL
+from config import logger, GEMINI_API_KEY, GEMINI_MODEL, NVIDIA_API_KEY
+
 
 # ── System prompt ───────────────────────────────────────────────────────────
 SYSTEM_PROMPT = """\
-You are आद्री (Adri), a personal voice assistant built for a student in Nepal.
+You are आद्री (Aadri), a personal voice assistant built for a student in Nepal.
 
 IDENTITY:
-- Your name is Adri (आद्री). Use it naturally in conversation, not robotically.
+- Your name is Aadri (आद्री). Use it naturally in conversation, not robotically.
 - You are warm, friendly, concise, and efficient — like a capable personal assistant who knows the user well.
 - You have a light sense of personality and warmth, but you stay efficient and on-point.
 
@@ -134,6 +135,100 @@ def _execute_tool(function_name: str, function_args: dict[str, Any]) -> Any:
         return {"error": error_msg}
 
 
+def _is_reasoning_query(text: str) -> tuple[bool, str]:
+    """
+    Check if the query is a reasoning request and return the cleaned query.
+    Triggers: '/reason', 'reason:', 'think:', 'विचार गर'
+    """
+    t = text.strip()
+    triggers = [
+        "/reason",
+        "reason:",
+        "think:",
+        "विचार गर"
+    ]
+    for trigger in triggers:
+        if t.lower().startswith(trigger.lower()):
+            query = t[len(trigger):].strip()
+            if query.startswith(":") or query.startswith("-"):
+                query = query[1:].strip()
+            return True, query
+    return False, text
+
+
+def _get_openai_messages(user_message: str) -> list[dict]:
+    """Convert conversation history to OpenAI-compatible messages for DeepSeek-R1."""
+    messages = [
+        {
+            "role": "system",
+            "content": (
+                "You are आद्री (Aadri), a personal voice assistant built for a student in Nepal. "
+                "You are warm, friendly, concise, and helpful. You speak both English and Nepali. "
+                "Respond in the same language as the user's query."
+            )
+        }
+    ]
+    
+    for msg in _conversation_history:
+        role = msg.role
+        if role == "model":
+            role = "assistant"
+        elif role == "tool":
+            continue # Skip tool calling details for reasoning model
+            
+        text_parts = []
+        if getattr(msg, 'parts', None):
+            for part in msg.parts:
+                if getattr(part, 'text', None):
+                    text_parts.append(part.text)
+                    
+        if text_parts:
+            messages.append({"role": role, "content": " ".join(text_parts)})
+            
+    # If the user message is not in history yet, add it
+    if not messages or messages[-1]["role"] != "user" or messages[-1]["content"] != user_message:
+        messages.append({"role": "user", "content": user_message})
+        
+    return messages
+
+
+def _run_nvidia_reasoning(user_message: str) -> str:
+    """Execute a reasoning query via NVIDIA build API calling DeepSeek-R1."""
+    try:
+        from openai import OpenAI
+        import re
+
+        logger.info("Routing reasoning query to NVIDIA DeepSeek-R1...")
+        client = OpenAI(
+            base_url="https://integrate.api.nvidia.com/v1",
+            api_key=NVIDIA_API_KEY
+        )
+
+        messages = _get_openai_messages(user_message)
+
+        completion = client.chat.completions.create(
+            model="deepseek-ai/deepseek-r1",
+            messages=messages,
+            temperature=0.6,
+            max_tokens=2048,
+        )
+
+        raw_response = completion.choices[0].message.content
+        logger.info("DeepSeek-R1 response retrieved successfully.")
+
+        # Strip the <think>...</think> thinking block so the voice assistant doesn't read it
+        clean_response = re.sub(r"<think>.*?</think>", "", raw_response, flags=re.DOTALL).strip()
+        
+        # If thinking block is stripped and nothing remains, return the raw response
+        if not clean_response:
+            clean_response = raw_response
+
+        return clean_response
+    except Exception as e:
+        logger.error("NVIDIA reasoning call failed: %s", e)
+        return f"I encountered an error querying the reasoning brain: {e}"
+
+
 def chat(user_message: str, detected_language: str = "en") -> tuple[str, str]:
     """
     Send a message to Gemini and get a response, handling tool calls.
@@ -150,6 +245,34 @@ def chat(user_message: str, detected_language: str = "en") -> tuple[str, str]:
 
     _register_tools()
     client = _get_client()
+
+    # Check for reasoning query
+    is_reasoning, clean_query = _is_reasoning_query(user_message)
+    if is_reasoning:
+        if NVIDIA_API_KEY:
+            # Append user message (as typed) to history
+            user_content = types.Content(
+                role="user",
+                parts=[types.Part.from_text(text=user_message)],
+            )
+            _conversation_history.append(user_content)
+            
+            # Run NVIDIA reasoning API
+            response_text = _run_nvidia_reasoning(clean_query)
+            
+            # Append model response to history
+            model_content = types.Content(
+                role="model",
+                parts=[types.Part.from_text(text=response_text)],
+            )
+            _conversation_history.append(model_content)
+            
+            # Determine language and return
+            response_lang = _detect_response_language(response_text, detected_language)
+            return response_text, response_lang
+        else:
+            logger.warning("NVIDIA_API_KEY not set. Falling back to Gemini for reasoning query.")
+            user_message = clean_query
 
     # Build user content
     user_content = types.Content(

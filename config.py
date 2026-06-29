@@ -32,6 +32,10 @@ if not shutil.which("ffmpeg"):
 
 GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
 TAVILY_API_KEY: str = os.getenv("TAVILY_API_KEY", "")
+NVIDIA_API_KEY: str = os.getenv("NVIDIA_API_KEY", "")
+ELEVENLABS_API_KEY: str = os.getenv("ELEVENLABS_API_KEY", "")
+
+
 
 # ── Gemini ──────────────────────────────────────────────────────────────────
 GEMINI_MODEL: str = "gemini-2.5-flash"
@@ -48,10 +52,23 @@ SILENCE_THRESHOLD: float = 0.01          # energy threshold for silence detectio
 SILENCE_DURATION: float = 1.5            # seconds of silence before stopping
 MAX_RECORD_SECONDS: int = 30             # safety cap for recording length
 
-# ── TTS voices ──────────────────────────────────────────────────────────────
+# ── TTS Settings ────────────────────────────────────────────────────────────
+TTS_ENGINE: str = "gemini"               # "gemini" (high quality), "elevenlabs" (premium), or "edge" (free, local)
+TTS_GEMINI_MODEL: str = "gemini-3.1-flash-tts-preview"
+TTS_GEMINI_VOICE: str = "Aoede"          # Aoede, Kore, Puck, Fenrir, Charon
+
+# ── ElevenLabs Settings ──────────────────────────────────────────────────────
+ELEVENLABS_VOICE_ID: str = "21m00Tcm4TlvDq8ikWAM" # Rachel (natural female voice)
+
+ELEVENLABS_MODEL_ID: str = "eleven_flash_v2_5"
+
+
+# ── edge-tts voices (for fallback or "edge" engine) ────────────────────────
 TTS_VOICE_EN: str = "en-US-AriaNeural"
 TTS_VOICE_NE: str = "ne-NP-HemkalaNeural"
-TTS_VOICE_FALLBACK: str = "hi-IN-SwaraNeural"   # Hindi fallback for Nepali
+TTS_VOICE_FALLBACK: str = "ne-NP-SagarNeural"   # Male Nepali fallback for edge-tts
+
+
 
 # ── Data files ──────────────────────────────────────────────────────────────
 ROUTINE_FILE: Path = DATA_DIR / "routine.json"
